@@ -70,14 +70,19 @@ point of the "Multicast and Transit Gateways" sub-topic.
 
 ## Build order (maps 1:1 to the 5 sub-topics)
 
+**Step 0 (prerequisite, not a sub-topic on its own)**: create all three VPCs
+(`Service-VPC`, `Consumer-A-VPC`, `Consumer-B-VPC`) and their single private
+subnets upfront, empty. Every step below adds resources into this base —
+this avoids having to backfill endpoints into a VPC created partway through
+the lab.
+
 1. **Using AWS PrivateLink for Services**
-   - Build `Service-VPC`, its subnet, the backend EC2 (e.g. `python3 -m
-     http.server 80` run via SSM), an internal Network Load Balancer with a
-     target group pointing at the backend instance.
+   - In `Service-VPC`: the backend EC2 (e.g. `python3 -m http.server 80` run
+     via SSM), an internal Network Load Balancer with a target group
+     pointing at the backend instance.
    - Create a VPC Endpoint Service backed by that NLB.
-   - Build `Consumer-A-VPC` and its subnet, create an Interface Endpoint
-     there consuming the Endpoint Service (accept the connection request on
-     the provider side).
+   - In `Consumer-A-VPC`: create an Interface Endpoint consuming the
+     Endpoint Service (accept the connection request on the provider side).
    - **Verify (live)**: from the Consumer-A test EC2 (over SSM), `curl` the
      Interface Endpoint's private DNS name and confirm the backend's
      response. No TGW involved in this path at all.
@@ -85,7 +90,8 @@ point of the "Multicast and Transit Gateways" sub-topic.
 2. **Advanced VPC Endpoint Architectures**
    - Add Interface Endpoints for `ssm`, `ssmmessages`, `ec2messages` in all
      three VPCs (this is what makes SSM access to every instance possible —
-     build this early since later steps depend on SSM access).
+     build this early since later steps depend on SSM access; the VPCs
+     already exist from Step 0 so all three can get their endpoints here).
    - Add a Gateway Endpoint for S3 in `Consumer-A-VPC` with an endpoint
      policy restricting access to one named test bucket.
    - **Verify (live)**: `aws s3 ls s3://<allowed-bucket>` succeeds from the
@@ -94,7 +100,8 @@ point of the "Multicast and Transit Gateways" sub-topic.
 
 3. **Advanced Transit Gateway Concepts**
    - Create the TGW, attach all three VPCs.
-   - Build `Consumer-B-VPC` and its subnet + test EC2 if not already done.
+   - Add the test EC2 in `Consumer-B-VPC` (its VPC/subnet already exist from
+     Step 0).
    - Create `RT-ConsumerA`, `RT-ConsumerB`, `RT-Shared`; set associations and
      propagations as described in Topology above.
    - **Verify (live)**: from the Consumer-A test EC2, ping the Service-VPC
