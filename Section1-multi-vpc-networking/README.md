@@ -4,8 +4,8 @@ Hands-on lab covering advanced multi-VPC connectivity patterns: PrivateLink serv
 
 This README is the only document you need to follow, start to finish. The
 full technical design and implementation plan live in
-`docs/superpowers/specs/{{SPEC_FILENAME}}` and
-`docs/superpowers/plans/{{PLAN_FILENAME}}` - those are reference material
+`docs/superpowers/specs/2026-07-05-section1-multi-vpc-networking-design.md` and
+`docs/superpowers/plans/2026-07-05-section1-multi-vpc-networking.md` - those are reference material
 for whoever implements the remaining code, not something you need to read.
 
 ## Progress
