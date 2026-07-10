@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "new-course-lab": {
+      "source": "OrenAshkenazy/ai-skills",
+      "sourceType": "github",
+      "skillPath": "skills/new-course-lab/SKILL.md",
+      "computedHash": "d21981628e803fe322111686e7e46511b03e8972ff7342a03a3fc52a69cac0bc"
+    }
+  }
+}
