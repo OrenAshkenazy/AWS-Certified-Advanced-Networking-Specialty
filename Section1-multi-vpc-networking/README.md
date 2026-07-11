@@ -392,6 +392,14 @@ Only `Consumer-A-VPC` is associated in this step. `Consumer-B-VPC` is deliberate
    curl -m 5 http://<vpc-lattice-service-domain-name>
    ```
 4. Expected result: an HTML directory listing produced by Python's `http.server`.
+5. If the command times out, check these in order:
+   - `Service-Lattice-TG` shows `Service-Backend` as `Healthy`.
+   - `Lab-Service-Network` has an `Active` VPC association for `Consumer-A-VPC`.
+   - The security group attached to the `Consumer-A-VPC` service-network association allows inbound `TCP` `80` from `10.1.0.0/16`.
+   - The `Consumer-A-Test` security group outbound rules allow traffic to the VPC Lattice managed prefix list on `TCP` `80`; the default allow-all outbound rule is sufficient.
+   - `Service-Backend-SG` allows inbound `TCP` `80` from the VPC Lattice managed prefix list `com.amazonaws.us-east-1.vpc-lattice`.
+   - The VPC Lattice service is associated with `Lab-Service-Network`.
+   - The VPC Lattice service listener on port `80` forwards to `Service-Lattice-TG`.
 
 ### What this proves
 This confirms that `Consumer-A-Test` can reach `Service-Backend` through a VPC Lattice service network. Unlike the Transit Gateway step, you did not add route-table entries between `Consumer-A-VPC` and `Service-VPC`. Unlike the PrivateLink step, you did not create a consumer Interface Endpoint for a custom endpoint service. VPC Lattice provides the service-network layer between the client VPC and the service.
@@ -444,6 +452,19 @@ For each route table, repeat:
 | `RT-ConsumerA` | Associated with `Consumer-A-VPC-Attachment`; only learns `Service-VPC` |
 | `RT-ConsumerB` | Associated with `Consumer-B-VPC-Attachment`; only learns `Service-VPC` |
 | `RT-Shared` | Associated with `Service-VPC-Attachment`; learns both consumer VPCs |
+
+### Remove the automatic default TGW route table associations
+Because `Lab-TGW` was created with default route table association enabled, AWS automatically associated each new VPC attachment with the default TGW route table. A TGW attachment can be associated with only one TGW route table at a time, so remove those automatic associations before creating the custom ones below.
+
+1. Open the **VPC console** -> left sidebar **Transit Gateway Route Tables**.
+2. Select the default route table for `Lab-TGW`. It is the one with **Default association route table** set to **Yes**.
+3. Open the **Associations** tab.
+4. Select `Service-VPC-Attachment` -> **Delete association**.
+5. Select `Consumer-A-VPC-Attachment` -> **Delete association**.
+6. Select `Consumer-B-VPC-Attachment` -> **Delete association**.
+7. Wait until those associations disappear before continuing.
+
+If the console says `Transit Gateway Attachment ... is already associated to a route table`, this is the step that was missed.
 
 ### Set TGW route table associations
 1. Select `RT-ConsumerA` -> **Associations** tab -> **Create association**.
