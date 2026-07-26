@@ -5,6 +5,7 @@
 ### 1. Multi account, Multi Region, and Multi VPC Networking
 * Using AWS PrivateLink for Services
 * Advanced VPC Endpoint Architectures
+* VPC Lattice Services and Service Networks
 * Advanced Transit Gateway Concepts
 * Multicast and Transit Gateways
 * Advanced Transit Gateway Architectures

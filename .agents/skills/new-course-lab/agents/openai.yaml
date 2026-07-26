@@ -1,0 +1,4 @@
+interface:
+  display_name: "New Course Lab"
+  short_description: "Start the next multi-component lab from a course outline."
+  default_prompt: "Use $new-course-lab to find the next unchecked module in docs/curriculum.md, scaffold the next lab README, and drive the repo through spec, plan, implementation, and live verification."
