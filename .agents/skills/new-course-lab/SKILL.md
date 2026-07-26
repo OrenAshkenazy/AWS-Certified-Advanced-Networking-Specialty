@@ -145,6 +145,36 @@ As work lands:
 - append to `## Gotchas` inline, when issues are discovered
 - append real captured values such as ARNs, IDs, endpoints, or URLs to
   `## Captured values`, replacing `_None yet._`
+- after each completed conceptual model or major lab step, create or update a
+  friendly recap file in the lab folder named `STEP<N>-RECAP.md`
+  (for example, `STEP4-RECAP.md`). Use `templates/step-recap.md` as the shape.
+  This is required when the step teaches a networking model such as
+  PrivateLink, VPC Endpoints, VPC Lattice, Transit Gateway, DNS, VPN,
+  Direct Connect, Cloud WAN, or inspection architectures.
+
+Recap files are not procedure manuals. They explain what the user just built
+and why it matters, using the real resource names/IDs captured during the lab.
+Write them for a learner who may lose the thread easily:
+
+- start with a short, concrete real-world analogy before AWS terminology. For
+  network routing, prefer the "three office buildings" model: VPCs are
+  buildings, attachments are each building's connection to the shared
+  mailroom, the central networking service is the mailroom, and route tables
+  are its delivery rules. Map every part of the analogy back to the actual AWS
+  resource names immediately afterwards.
+- follow it with a one-sentence mental model
+- show the actual resources created in a small table
+- connect the traffic path using the real VPCs, route tables, endpoints,
+  attachments, services, ARNs, DNS names, or IDs
+- explain the difference between similar concepts that caused confusion
+- include tradeoffs with adjacent alternatives when relevant, such as
+  Transit Gateway vs VPC peering, PrivateLink vs VPC Lattice, Gateway
+  Endpoints vs Interface Endpoints, NAT Gateway vs private endpoints, or
+  Route 53 Resolver endpoints vs public DNS
+- include a short "what the live verification proved" section
+- include "where people get stuck" based on gotchas discovered during the lab
+- avoid abstract-only explanations; every concept should tie back to the
+  concrete lab topology
 
 ### Step 8: Completion gate requires live verification
 

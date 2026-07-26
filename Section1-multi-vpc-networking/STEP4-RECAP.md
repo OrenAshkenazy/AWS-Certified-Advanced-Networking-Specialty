@@ -1,18 +1,30 @@
 # Step 4 Recap - Transit Gateway vs VPC Peering
 
-Step 4 built a segmented hub-and-spoke network with AWS Transit Gateway. The lab connected three VPCs to one regional routing hub, then used separate TGW route tables to control which VPCs could talk to each other.
+Step 4 built a segmented hub-and-spoke network with AWS Transit Gateway. Think of the VPCs as three office buildings that share one mailroom: a building can only send a package where the mailroom's sorting rules allow it.
+
+## The Real-World Picture
+
+```text
+Consumer-A-VPC office                 Shared mailroom                 Service-VPC office
+       |                                      |                               |
+Consumer-A attachment  ->  Lab-TGW (`tgw-024c725b05af1072a`)  ->  Service attachment
+```
+
+In this lab, the three office buildings are `Consumer-A-VPC`, `Consumer-B-VPC`, and `Service-VPC`. Their TGW attachments are the doors into the shared mailroom, `Lab-TGW`. A TGW route table is the mailroom's sorting sheet: it decides which building receives a package after it arrives.
+
+For example, a packet from `Consumer-A-VPC` enters through `Consumer-A-VPC-Attachment` (`tgw-attach-0c71cbb3c9037f968`). The mailroom consults `RT-ConsumerA` (`tgw-rtb-0907e33f064c9855e`), finds a route only for the Service building (`10.0.0.0/16`), and sends it through `Service-VPC-Attachment` (`tgw-attach-038f6c367592e43e5`). It does not send that packet to Consumer B because that delivery address is not on the sorting sheet.
 
 ## What We Built
 
 | Component | Purpose |
 |---|---|
 | `Lab-TGW` | Regional routing hub for the lab VPCs |
-| `Service-VPC-Attachment` | Connects `Service-VPC` to the TGW |
-| `Consumer-A-VPC-Attachment` | Connects `Consumer-A-VPC` to the TGW |
-| `Consumer-B-VPC-Attachment` | Connects `Consumer-B-VPC` to the TGW |
-| `RT-ConsumerA` | Controls traffic entering TGW from `Consumer-A-VPC` |
-| `RT-ConsumerB` | Controls traffic entering TGW from `Consumer-B-VPC` |
-| `RT-Shared` | Controls traffic entering TGW from `Service-VPC` |
+| `Service-VPC-Attachment` (`tgw-attach-038f6c367592e43e5`) | Connects `Service-VPC` to the TGW |
+| `Consumer-A-VPC-Attachment` (`tgw-attach-0c71cbb3c9037f968`) | Connects `Consumer-A-VPC` to the TGW |
+| `Consumer-B-VPC-Attachment` (`tgw-attach-0bf4d601df5321b5d`) | Connects `Consumer-B-VPC` to the TGW |
+| `RT-ConsumerA` (`tgw-rtb-0907e33f064c9855e`) | Sorting sheet for traffic entering from `Consumer-A-VPC` |
+| `RT-ConsumerB` (`tgw-rtb-03f196be3c0333463`) | Sorting sheet for traffic entering from `Consumer-B-VPC` |
+| `RT-Shared` (`tgw-rtb-085c0dc832635bc47`) | Sorting sheet for traffic entering from `Service-VPC` |
 
 The intended routing model was:
 
@@ -145,8 +157,8 @@ That is exactly what Step 4 modeled.
 Use this shortcut:
 
 ```text
-VPC Peering = connect this VPC directly to that VPC
-Transit Gateway = connect many networks through a central router
+VPC Peering = build a private road directly between two office buildings
+Transit Gateway = send traffic through one shared mailroom, using its delivery rules
 VPC Lattice = connect services, not networks
 PrivateLink = expose one private service endpoint
 ```
